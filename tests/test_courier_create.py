@@ -8,15 +8,18 @@ from utils.generators import register_new_courier_and_return_login_password as r
 
 class TestCourierCreate:
     @allure.title("Курьера можно создать")
-    def test_courier_created(self):
+    def test_courier_created(self, delete_courier):
+        payload = gc()
         with allure.step("Отправка запроса на регистрацию курьера в системе"):
             response = requests.post(Urls.BASE_URL + Urls.COURIER_URL, data = gc())
         assert response.status_code == 201
+        delete_courier.append(payload)
 
     @allure.title("Нельзя создать двух одинаковых курьеров")
-    def test_courier_repeat_created(self):
+    def test_courier_repeat_created(self, delete_courier):
         login, password, first_name = rc()
         payload = {'login': login, 'password': password, 'firstName': first_name}
+        delete_courier.append(payload)
         with allure.step("Отправка запроса на регистрацию курьера в системе"):
             response = requests.post(Urls.BASE_URL + Urls.COURIER_URL, data = payload)
         assert response.status_code == 409
@@ -31,9 +34,11 @@ class TestCourierCreate:
         assert response.status_code == 400
 
     @allure.title("Успешный запрос возвращает сообщение")
-    def test_courier_created_return_success_message(self):
+    def test_courier_created_return_success_message(self, delete_courier):
+        payload = gc()
+        delete_courier.append(payload)
         with allure.step("Отправка запроса на регистрацию курьера в системе"):
-            response = requests.post(Urls.BASE_URL + Urls.COURIER_URL, data = gc())
+            response = requests.post(Urls.BASE_URL + Urls.COURIER_URL, data = payload)
         assert response.json() == {"ok": True}
 
     @allure.title("Если нет обязательного поля {missing_field} возвращает сообщение об ошибке")
@@ -45,10 +50,11 @@ class TestCourierCreate:
             response = requests.post(Urls.BASE_URL + Urls.COURIER_URL, data = payload)
         assert response.json()['message'] == Message.COURIER_CREATED_WITHOUT_REQUIRED_FIELDS_MESSAGE
 
-    @allure.title("Если создать пользователя с логином, который уже есть, возвращается сообщзение об ошибке")
-    def test_courier_repeat_created_message(self):
+    @allure.title("Если создать пользователя с логином, который уже есть, возвращается сообщение об ошибке")
+    def test_courier_repeat_created_message(self, delete_courier):
         login, password, first_name = rc()
         payload = {'login': login, 'password': password, 'firstName': first_name}
+        delete_courier.append(payload)
         with allure.step("Отправка запроса на регистрацию курьера в системе"):
             response = requests.post(Urls.BASE_URL + Urls.COURIER_URL, data = payload)
         assert response.json()['message'] == Message.COURIER_CREATED_ALREADY_EXIST_MESSAGE

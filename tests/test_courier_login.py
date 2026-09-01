@@ -8,17 +8,19 @@ from utils.generators import register_new_courier_and_return_login_password as r
 
 class TestCourierLogin:
     @allure.title("Курьера может авторизоваться")
-    def test_courier_login(self):
+    def test_courier_login(self, delete_courier):
         login, password, first_name = rc()
         payload = {'login': login, 'password': password}
+        delete_courier.append(payload)
         with allure.step("Отправка запроса на авторизацию курьера в системе"):
             response = requests.post(Urls.BASE_URL + Urls.COURIER_LOGIN_URL, data = payload)
         assert response.status_code == 200
 
     @allure.title("При авторизации курьера возвращается id")
-    def test_courier_login_message(self):
+    def test_courier_login_message(self, delete_courier):
         login, password, first_name = rc()
         payload = {'login': login, 'password': password}
+        delete_courier.append(payload)
         with allure.step("Отправка запроса на авторизацию курьера в системе"):
             response = requests.post(Urls.BASE_URL + Urls.COURIER_LOGIN_URL, data = payload)
         assert "id" in response.json()
