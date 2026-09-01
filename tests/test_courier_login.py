@@ -11,14 +11,16 @@ class TestCourierLogin:
     def test_courier_login(self):
         login, password, first_name = rc()
         payload = {'login': login, 'password': password}
-        response = requests.post(Urls.BASE_URL + Urls.COURIER_LOGIN_URL, data = payload)
+        with allure.step("Отправка запроса на авторизацию курьера в системе"):
+            response = requests.post(Urls.BASE_URL + Urls.COURIER_LOGIN_URL, data = payload)
         assert response.status_code == 200
 
     @allure.title("При авторизации курьера возвращается id")
     def test_courier_login_message(self):
         login, password, first_name = rc()
         payload = {'login': login, 'password': password}
-        response = requests.post(Urls.BASE_URL + Urls.COURIER_LOGIN_URL, data = payload)
+        with allure.step("Отправка запроса на авторизацию курьера в системе"):
+            response = requests.post(Urls.BASE_URL + Urls.COURIER_LOGIN_URL, data = payload)
         assert "id" in response.json()
         
     @allure.title("Нельзя авторизоваться курьером без обязательного поля {missing_field}")
@@ -27,7 +29,8 @@ class TestCourierLogin:
         payload = gc()
         payload.pop('firstName', None)
         payload.pop(missing_field)
-        response = requests.post(Urls.BASE_URL + Urls.COURIER_LOGIN_URL, json = payload, timeout = 2)
+        with allure.step("Отправка запроса на авторизацию курьера в системе"):
+            response = requests.post(Urls.BASE_URL + Urls.COURIER_LOGIN_URL, json = payload, timeout = 2)
         assert response.status_code == 400
 
     @allure.title("Возвращается ошибка при авторизоации курьером без обязательного поля {missing_field}")
@@ -36,20 +39,23 @@ class TestCourierLogin:
         payload = gc()
         payload.pop('firstName', None)
         payload.pop(missing_field)
-        response = requests.post(Urls.BASE_URL + Urls.COURIER_LOGIN_URL, json = payload, timeout = 2)
+        with allure.step("Отправка запроса на авторизацию курьера в системе"):
+            response = requests.post(Urls.BASE_URL + Urls.COURIER_LOGIN_URL, json = payload, timeout = 2)
         assert response.json()['message'] == Message.COURIER_LOGIN_MISSING_FIELDS_MESSAGE
 
     @allure.title("Несуществующая пара логин-пароль возвращает ошибку")
     def test_courier_login_invalid_credentinal_message(self):
         payload = gc()
         payload.pop('firstName', None)
-        response = requests.post(Urls.BASE_URL + Urls.COURIER_LOGIN_URL, json = payload, timeout = 2)
+        with allure.step("Отправка запроса на авторизацию курьера в системе"):
+            response = requests.post(Urls.BASE_URL + Urls.COURIER_LOGIN_URL, json = payload, timeout = 2)
         assert response.json()['message'] == Message.COURIER_LOGIN_NOT_FOUND_MESSAGE
 
     @allure.title("Несуществующая пара логин-пароль возвращает код 404")
     def test_courier_login_invalid_credentinal_code(self):
         payload = gc()
         payload.pop('firstName', None)
-        response = requests.post(Urls.BASE_URL + Urls.COURIER_LOGIN_URL, json = payload, timeout = 2)
+        with allure.step("Отправка запроса на авторизацию курьера в системе"):
+            response = requests.post(Urls.BASE_URL + Urls.COURIER_LOGIN_URL, json = payload, timeout = 2)
         assert response.status_code == 404, f"Сервер вернул {response.status_code} вместо 404"
         
