@@ -2,6 +2,7 @@ from faker import Faker
 import requests
 import string
 import random
+from data.config import Urls
 
 fake = Faker('ru_RU')
 
@@ -31,7 +32,7 @@ def register_new_courier_and_return_login_password():
         "firstName": first_name
     }
 
-    response = requests.post('https://qa-scooter.education-services.ru/api/v1/courier', data=payload)
+    response = requests.post(Urls.BASE_URL + Urls.COURIER_URL, data=payload)
 
     # если регистрация прошла успешно (код ответа 201), добавляем в список логин и пароль курьера
     if response.status_code == 201:
